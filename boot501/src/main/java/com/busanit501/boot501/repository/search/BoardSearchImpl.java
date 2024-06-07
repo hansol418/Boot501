@@ -63,19 +63,19 @@ public class BoardSearchImpl extends QuerydslRepositorySupport implements BoardS
     // 조건절을 자바 문법으로만 구성해서, 전달해보기.
     if ((types != null && types.length > 0) && keyword != null) {
       // BooleanBuilder , 조건절의 옵션을 추가하기 쉽게하는 도구.
-      log.info("조건절 실해여부 확인 1 ");
+      log.info("조건절 실행여부 확인 1 ");
       BooleanBuilder   booleanBuilder = new BooleanBuilder();
       //String[] types = {"t","w" }
       for (String type : types) {
         switch (type) {
           case "t":
-            log.info("조건절 실해여부 확인 2 :  title");
+            log.info("조건절 실행여부 확인 2 :  title");
             booleanBuilder.or(board.title.contains(keyword));
           case "w":
-            log.info("조건절 실해여부 확인 2 :  writer");
+            log.info("조건절 실행여부 확인 2 :  writer");
             booleanBuilder.or(board.writer.contains(keyword));
           case "c":
-            log.info("조건절 실해여부 확인 2 :  content");
+            log.info("조건절 실행여부 확인 2 :  content");
             booleanBuilder.or(board.content.contains(keyword));
         } //switch
       } // end for
