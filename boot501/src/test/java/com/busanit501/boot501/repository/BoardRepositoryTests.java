@@ -26,7 +26,7 @@ public class BoardRepositoryTests {
     IntStream.rangeClosed(1, 100).forEach(i ->
         {
           Board board = Board.builder()
-              .title("오늘 점심 뭐 먹지?" + i)
+              .title("오늘222 점심 뭐 먹지?" + i)
               .content("한식" + i)
               .writer("이상용" + (i % 10))
               .build();

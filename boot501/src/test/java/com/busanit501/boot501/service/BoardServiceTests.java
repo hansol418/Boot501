@@ -18,10 +18,10 @@ public class BoardServiceTests {
   public void testInsert() {
     // 화면에서 넘어온 더미 데이터 만들기. DTO 타입.
     BoardDTO boardDTO = BoardDTO.builder()
-            .title("내일 모하니?")
-            .content("부모님 인사하기")
-            .writer("이상용")
-            .build();
+        .title("내일 모하니?")
+        .content("부모님 인사하기")
+        .writer("이상용")
+        .build();
 
     Long bno = boardService.register(boardDTO);
     log.info("추가 후에 반환 게시글 번호 bno : " + bno);
@@ -41,11 +41,11 @@ public class BoardServiceTests {
     // 변경시, 변경할 더미 데이터, 임시, 601L
 // 화면에서 넘어온 더미 데이터 만들기. DTO 타입.
     BoardDTO boardDTO = BoardDTO.builder()
-            .bno(601L)
-            .title("내일 모하니?수정버전")
-            .content("부모님 인사하기 : 수정버전")
-            .writer("이상용 : 수정버전")
-            .build();
+        .bno(601L)
+        .title("내일 모하니?수정버전")
+        .content("부모님 인사하기 : 수정버전")
+        .writer("이상용 : 수정버전")
+        .build();
 
     //디비에서 조회하기.
     boardService.update(boardDTO);
@@ -56,7 +56,7 @@ public class BoardServiceTests {
 
   @Test
   public void testDelete() {
-    //디비에서 조회하기.
+        //디비에서 조회하기.
     // 좋은 질문,
     // 서버에서 화면, 데이터 같이 처리, Controller,
     // 질문, 게시글 삭제 할려면, 화면에 보일까요? 안보일까요?
@@ -78,7 +78,7 @@ public class BoardServiceTests {
             .size(10)
             .build();
 
-    PageResponseDTO<BoardDTO> responseDTO = boardService.list(pageRequestDTO);
+  PageResponseDTO<BoardDTO> responseDTO = boardService.list(pageRequestDTO);
     log.info("list 테스트 responseDTO : " + responseDTO);
 
   }
