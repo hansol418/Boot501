@@ -1,4 +1,4 @@
-package com.busanit501.boot501.dto;
+package com.busanit501.lhslunchproject.dto;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;

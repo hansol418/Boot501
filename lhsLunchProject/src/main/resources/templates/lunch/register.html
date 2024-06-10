@@ -14,7 +14,7 @@
                     글작성
                 </div>
                 <div class="card-body">
-                    <form method="post" action="/board/register">
+                    <form method="post" action="/lunch/register">
                         <div class="mb-3">
                             <label for="title" class="form-label">제목</label>
                             <input type="text" name="title" class="form-control" id="title" placeholder="제목을 입력해주세요.">
@@ -54,15 +54,15 @@
 
     // 글쓰기 폼에서 에러가 발생해서, 서버로 부터, 키: errors에
     // 정보가 담겨져 있음.
-    const errors = [[${errors}]]
-    console.log("errors : " + errors)
-    let errorMsg =''
-    if(errors) {
-        for(let i = 0; i < errors.length; i++){
-            errorMsg += `${errors[i].field} 는 ${errors[i].code}\n`
-        }
-        alert(errorMsg)
-    }
+ const errors = [[${errors}]]
+ console.log("errors : " + errors)
+ let errorMsg =''
+ if(errors) {
+     for(let i = 0; i < errors.length; i++){
+         errorMsg += `${errors[i].field} 는 ${errors[i].code}\n`
+     }
+     alert(errorMsg)
+ }
 </script>
 
 </body>
