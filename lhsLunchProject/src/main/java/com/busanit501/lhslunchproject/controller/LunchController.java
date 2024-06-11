@@ -76,7 +76,7 @@ public class LunchController {
     @GetMapping({"/read","/update"})
     public void read(Long bno, PageRequestDTO pageRequestDTO, Model model) {
 
-        log.info("BoardController : /lunch/read  확인 중, pageRequestDTO : " + pageRequestDTO);
+        log.info("LunchController : /lunch/read  확인 중, pageRequestDTO : " + pageRequestDTO);
 
         // 디비에서, bno 번호, 하나의 게시글 디비 정보 가져오기.
         LunchDTO lunchDTO = lunchService.read(bno);

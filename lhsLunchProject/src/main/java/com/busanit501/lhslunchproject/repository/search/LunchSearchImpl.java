@@ -1,6 +1,5 @@
 package com.busanit501.lhslunchproject.repository.search;
 
-
 import com.busanit501.lhslunchproject.domain.Lunch;
 import com.busanit501.lhslunchproject.domain.QLunch;
 import com.querydsl.core.BooleanBuilder;

@@ -22,20 +22,20 @@ import static com.busanit501.lhslunchproject.domain.QLunch.lunch;
 public class LunchRepositoryTests {
 
   @Autowired
-  LunchRepository boardRepository;
+  LunchRepository lunchRepository;
 
   @Test
   public void testInsert() {
     IntStream.rangeClosed(1, 100).forEach(i ->
         {
-          Lunch board = Lunch.builder()
+          Lunch lunch = Lunch.builder()
               .title("오늘222 점심 뭐 먹지?" + i)
               .content("한식" + i)
               .writer("이상용" + (i % 10))
               .build();
           // 데이터베이스에 추가,
           // save 없으면, 1)추가, 있으면, 2) 수정.
-          Lunch result = boardRepository.save(board);
+          Lunch result = LunchRepository.save(lunch);
           log.info("추가한 BNO: " + result.getBno());
         }
     );
@@ -45,21 +45,21 @@ public class LunchRepositoryTests {
   @Test
   public void testSelect() {
     Long bno = 100L;
-    Optional<Lunch> result = boardRepository.findById(bno);
-    Lunch board = result.orElseThrow();
-    log.info("조회 결과 : " + board);
+    Optional<Lunch> result = LunchRepository.findById(bno);
+    Lunch lunch = result.orElseThrow();
+    log.info("조회 결과 : " + lunch);
   }
 
   @Test
   public void testUpdate() {
     Long bno = 100L;
-    Optional<Lunch> result = boardRepository.findById(bno);
+    Optional<Lunch> result = LunchRepository.findById(bno);
     Lunch lunch = result.orElseThrow();
 
     log.info("조회 결과1 전 : " + lunch);
     lunch.changeTitleAndContent("오늘 점심 뭐 먹죠 수정버전", "로제 떡볶이, 냉라면, 족발");
     // 반영.
-    boardRepository.save(lunch);
+    LunchRepository.save(lunch);
     log.info("조회 결과2 후: " + lunch);
 
   }
@@ -68,7 +68,7 @@ public class LunchRepositoryTests {
   public void testDelete() {
     Long bno = 100L;
     // 반영.
-    boardRepository.deleteById(100L);
+    LunchRepository.deleteById(100L);
     log.info("조회 결과2 후: 디비상에서 삭제 여부 확인 하기.");
   }
 
@@ -83,7 +83,7 @@ public class LunchRepositoryTests {
     // 10개씩 조회 해보기.
     //Page 타입이라는 것은, 해당 결과에, 여러 정보들이 있음.
     // 예) 10개씩 가져온 데이터, 2)페이지 정보, 3)갯수, 4)전체 갯수 등.
-    Page<Lunch> result = boardRepository.findAll(pageable);
+    Page<Lunch> result = LunchRepository.findAll(pageable);
 
     // 담겨진 페이징 관련 결과를 출력및 알아보기.
     log.info("전체 갯수 total  result.getTotalElements() : " + result.getTotalElements());
@@ -103,7 +103,7 @@ public class LunchRepositoryTests {
 
     Pageable pageable = PageRequest.of(1, 10, Sort.by("bno").descending());
     // 실행 여부를 확인 해보기.
-    boardRepository.search(pageable);
+    LunchRepository.search(pageable);
   }
 
   // Querydsl 이용해서 , 검색, 페이징 이용해서 조회해보기
@@ -119,7 +119,7 @@ public class LunchRepositoryTests {
 
     // 실행 여부를 확인 해보기.
     // 결과를 반환 타입 Page 받기.
-   Page<Lunch> result =  boardRepository.searchAll(types,keyword,pageable);
+   Page<Lunch> result =  LunchRepository.searchAll(types,keyword,pageable);
 
    // 페이징 된 결과물 확인.
     // 담겨진 페이징 관련 결과를 출력및 알아보기.

@@ -1,6 +1,5 @@
 package com.busanit501.lhslunchproject.repository;
 
-
 import com.busanit501.lhslunchproject.domain.Lunch;
 import com.busanit501.lhslunchproject.repository.search.LunchSearch;
 import org.springframework.data.domain.Page;
