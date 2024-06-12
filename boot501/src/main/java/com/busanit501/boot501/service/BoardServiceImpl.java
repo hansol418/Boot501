@@ -2,6 +2,7 @@ package com.busanit501.boot501.service;
 
 import com.busanit501.boot501.domain.Board;
 import com.busanit501.boot501.dto.BoardDTO;
+import com.busanit501.boot501.dto.BoardListReplyCountDTO;
 import com.busanit501.boot501.dto.PageRequestDTO;
 import com.busanit501.boot501.dto.PageResponseDTO;
 import com.busanit501.boot501.repository.BoardRepository;
@@ -83,6 +84,29 @@ public class BoardServiceImpl implements BoardService {
     PageResponseDTO pageResponseDTO = PageResponseDTO.<BoardDTO>withAll()
             .pageRequestDTO(pageRequestDTO)
             .dtoList(dtoList)
+            .total((int) result.getTotalElements())
+            .build();
+    //test
+
+    return pageResponseDTO;
+  }
+
+  @Override
+  public PageResponseDTO<BoardListReplyCountDTO> listWithReplyCount
+          (PageRequestDTO pageRequestDTO) {
+    String[] types = pageRequestDTO.getTypes();
+    String keyword = pageRequestDTO.getKeyword();
+    Pageable pageable = pageRequestDTO.getPageable("bno");
+
+    // 댓글 갯수를 포함한 목록을 가져오기.
+    Page<BoardListReplyCountDTO> result = boardRepository.searchWithReplyCount(types,keyword,pageable);
+    // BoardListReplyCountDTO 변환 할 필요가 일단 없다.
+
+    // 서버 -> 화면에 전달할 준비물 준비 작업 완료.
+    // 1)페이지 2) 사이즈 3) 전쳇갯수 4) 검색 결과 내역10개(엔티티-> DTO)
+    PageResponseDTO pageResponseDTO = PageResponseDTO.<BoardListReplyCountDTO>withAll()
+            .pageRequestDTO(pageRequestDTO)
+            .dtoList(result.getContent())
             .total((int) result.getTotalElements())
             .build();
 

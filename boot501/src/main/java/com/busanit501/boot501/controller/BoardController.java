@@ -1,6 +1,7 @@
 package com.busanit501.boot501.controller;
 
 import com.busanit501.boot501.dto.BoardDTO;
+import com.busanit501.boot501.dto.BoardListReplyCountDTO;
 import com.busanit501.boot501.dto.PageRequestDTO;
 import com.busanit501.boot501.dto.PageResponseDTO;
 import com.busanit501.boot501.service.BoardService;
@@ -23,15 +24,15 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 @RequiredArgsConstructor
 public class BoardController {
     private final BoardService boardService;
-
+    //깃 테스트2
     // ex) /board/list
     @GetMapping("/list")
     public void list(PageRequestDTO pageRequestDTO, Model model) {
 
         log.info("BoardController : /board/list  확인 중, pageRequestDTO : " + pageRequestDTO);
 
-        PageResponseDTO<BoardDTO> responseDTO
-                = boardService.list(pageRequestDTO);
+        PageResponseDTO<BoardListReplyCountDTO> responseDTO
+                = boardService.listWithReplyCount(pageRequestDTO);
         // 서버로부터 응답확인.
         log.info("BoardController 확인 중, responseDTO : " + responseDTO);
         // 서버 -> 화면 데이터 전달.
@@ -113,13 +114,14 @@ public class BoardController {
         // 글쓰기 후, 작성된 게시글 번호 -> 화면 , 임시로 전달.(1회용)
         redirectAttributes.addFlashAttribute("result",boardDTO.getBno());
         redirectAttributes.addFlashAttribute("resultType","update");
-        return "redirect:/board/list";
+
+        return "redirect:/board/list?"+pageRequestDTO.getLink2();
 
     }
 
     //글삭제 처리
     @PostMapping("/delete")
-    public String delete(Long bno, RedirectAttributes redirectAttributes
+    public String delete(PageRequestDTO pageRequestDTO, Long bno, RedirectAttributes redirectAttributes
     ) {
 
 
@@ -130,7 +132,7 @@ public class BoardController {
         // 글쓰기 후, 작성된 게시글 번호 -> 화면 , 임시로 전달.(1회용)
         redirectAttributes.addFlashAttribute("result",bno);
         redirectAttributes.addFlashAttribute("resultType","delete");
-        return "redirect:/board/list";
+        return "redirect:/board/list?"+pageRequestDTO.getLink2();
 
     }
 
