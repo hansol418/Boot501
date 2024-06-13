@@ -1,0 +1,5 @@
+select * from board order by bno desc;
+select * from reply order by rno desc;
+# 더미 댓글 추가
+insert into reply (moddate,regdate,reply_text,replyer,board_bno)
+select moddate,regdate,reply_text,replyer,board_bno from reply;

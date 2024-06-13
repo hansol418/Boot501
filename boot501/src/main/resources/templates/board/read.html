@@ -75,11 +75,73 @@
     <!--    댓글 목록 페이징 출력-->
     <div class="row content mt-2">
         <div class="col">
-            <ul class="pagination replyPaging">
+            <div class="paging-container">
+                <ul class="pagination replyPaging">
 
-            </ul>
+                </ul>
+            </div>
         </div>
     </div>
+
+    <!--    댓글 작성 모달 창 폼-->
+    <!-- Modal -->
+    <div class="modal registerModal" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h4>댓글 등록 폼</h4>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="input-group mb-3">
+                        <span class="input-group-text">댓글 내용</span>
+                        <input type="text" placeholder="내용을 입력해주세요."
+                               class="form-control replyText"></input>
+                    </div>
+                    <div class="input-group mb-3">
+                        <span class="input-group-text">작성자</span>
+                        <input type="text" placeholder="작성자를 입력해주세요."
+                               class="form-control replyer"></input>
+                    </div>
+
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary closeRegisterBtn" data-bs-dismiss="modal">Close
+                    </button>
+                    <button type="button" class="btn btn-primary registerBtn">댓글 추가하기</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!--모달창 끝-->
+
+    <!--    댓글 수정 모달 창 폼-->
+    <!-- Modal -->
+    <div class="modal updateModal" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header ">
+                    <!--                    수정 또는 삭제 재사용-->
+                    <h4 class="modal-title replyHeader"></h4>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="input-group mb-3">
+                        <span class="input-group-text">내용</span>
+                        <input type="text" class="form-control updateText"></input>
+                    </div>
+
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary closeUpdateBtn" data-bs-dismiss="modal">Close
+                    </button>
+                    <button type="button" class="btn btn-primary updateBtn">수정하기</button>
+                    <button type="button" class="btn btn-warning deleteBtn">삭제하기</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!--모달창 끝-->
 
     <!--    axios 사용하기 위한 도구 설치-->
     <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
@@ -90,6 +152,53 @@
 
 <!--자바스크립트 추가하는 영역-->
 <script layout:fragment="javascript" th:inline="javascript">
+
+
+
+
+    // 모달 댓글 폼 표시하기=====================================================
+    const registerModal = new bootstrap.Modal(document.querySelector(".registerModal"))
+
+    // 필요한 요소 준비물 준비.
+    const registerBtn = document.querySelector(".registerBtn")
+    const replyText = document.querySelector(".replyText")
+    const replyer = document.querySelector(".replyer")
+    const closeRegisterBtn = document.querySelector(".closeRegisterBtn")
+
+    // 이벤트 처리하기.
+    document.querySelector(".addReplyBtn").addEventListener("click", function (e) {
+        registerModal.show()
+    }, false)
+
+    document.querySelector(".registerBtn").addEventListener("click", function (e) {
+        // registerModal.hide()
+        const replyObj = {
+            bno: bno,
+            replyText: replyText.value,
+            replyer: replyer.value
+        }
+        // reply.js , addReply 이용하기.
+        addReply(replyObj).then(result => {
+            // 댓글 쓰기 성공 후 처리
+            alert(result.rno + "번 댓글 작성 성공: ")
+            // 모달 창 닫기
+            registerModal.hide()
+            // 기존 입력폼의 값 비우기
+            replyText.value = ""
+            replyer.value = ""
+            // 마지막 댓글 페이지 이동
+            printReplies(1, 10, true)
+        }).catch(e => {
+            alert("댓글 작성 실패")
+        })
+
+    }, false)
+    // 모달 댓글 폼 표시하기=====================================================
+
+
+
+
+
     const bno = [[${boardDTO.bno}]]
 
     //화면에, 데이터를 넣기 위해서, innerHTML 이용해서, 주입 하기.
@@ -114,8 +223,9 @@
         })
     }
 
-    // 통신 확인
-    printReplies(2, 10)
+    // 통신 확인 ==========================================================
+    // goLast 부분 추가해서 테스트
+    printReplies(1, 10)
 
     /////댓글 목록 , HTML 그리기/////////////////
     function printList(dtoList) {
@@ -137,6 +247,7 @@
         } // if
         replyList.innerHTML = str
     }
+    /////댓글 목록 , HTML 그리기/////////////////
 
     /////댓글 페이징, HTML 그리기/////////////////////////////////////
     function printPages(data) {
@@ -144,7 +255,7 @@
         let pageStr = "";
         // 이전 페이지 여부
         if (data.prev) {
-            pageStr += `<li class="page-item"<a class="page-link"
+            pageStr += `<li class="page-item"><a class="page-link"
             data-page="${data.start - 1}">Prev</a></li>`
         }
 
@@ -156,12 +267,159 @@
 
         // 다음 페이지 여부
         if (data.next) {
-            pageStr += `<li class="page-item"<a class="page-link"
+            pageStr += `<li class="page-item"><a class="page-link"
             data-page="${data.end + 1}">Next</a></li>`
         }
         // 위에서 만든 가상의 HTML 요소를 , 특정 요소에 주입하기.
         replyPaging.innerHTML = pageStr
     }
+    /////댓글 페이징, HTML 그리기/////////////////////////////////////
+
+    // 페이지 이동 이벤트 처리=====================================================
+    let page = 1
+    let size = 10
+
+    replyPaging.addEventListener("click",function (e){
+        e.preventDefault()
+        e.stopPropagation()
+
+        const target = e.target
+
+        // a 태그만 이벤트 처리 하겠다, 그외에는 넘어가기함.
+        if(!target || target.tagName != 'A'){
+            return
+        }
+        const pageNum = target.getAttribute("data-page")
+        page = pageNum
+        printReplies(page,size)
+
+    },false)
+    // 페이지 이동 이벤트 처리=====================================================
+
+    // 모달 댓글 수정폼 표시하기=====================================================
+    const updateModal = new bootstrap.Modal(document.querySelector(".updateModal"))
+
+    // 필요한 요소 준비물 준비.
+    const replyHeader = document.querySelector(".replyHeader")
+    const updateBtn = document.querySelector(".updateBtn")
+    const deleteBtn = document.querySelector(".deleteBtn")
+    const updateText = document.querySelector(".updateText")
+    const closeUpdateBtn = document.querySelector(".closeUpdateBtn")
+
+    // 이벤트 처리하기.
+    // 댓글 목록에서 하나 댓글 선택시, 이벤트 처리
+    replyList.addEventListener("click", function (e){
+        e.preventDefault()
+        e.stopPropagation()
+
+        const target = e.target
+
+        // 목록요소를 선택시 span만 이벤트 처리 하겠다.
+        if(!target || target.tagName != 'SPAN' ){
+            return
+        }
+        // span 태그에 있는 속성 data-rno 값 가져오기.
+        const rno = target.getAttribute("data-rno")
+
+        // span 태그 중에서, data-rno 요소가 있는 것만 처리하겠다.
+        if(!rno) {
+            return;
+        }
+
+        getReply(rno).then(reply => {
+            console.log("조회한 reply : " + reply)
+            replyHeader.innerHTML = reply.rno
+            updateText.value = reply.replyText
+            updateModal.show()
+        }).catch(e =>
+            alert("댓글 조회 실패")
+        )
+
+    },false)
+    // 댓글 목록에서 하나 댓글 선택시, 이벤트 처리
+    // 모달 댓글 수정폼 표시하기=====================================================
+
+    // 댓글 작성 이벤트 처리===============================================
+    document.querySelector(".registerBtn").addEventListener("click", function (e) {
+        // registerModal.hide()
+        const replyObj = {
+            bno: bno,
+            replyText: replyText.value,
+            replyer: replyer.value
+        }
+        // reply.js , addReply 이용하기.
+        addReply(replyObj).then(result => {
+            // 댓글 쓰기 성공 후 처리
+            alert(result.rno + "번 댓글 작성 성공: ")
+            // 모달 창 닫기
+            registerModal.hide()
+            // 기존 입력폼의 값 비우기
+            replyText.value = ""
+            replyer.value = ""
+            // 마지막 댓글 페이지 이동
+            printReplies(1, 10, true)
+        }).catch(e => {
+            alert("댓글 작성 실패")
+        })
+
+    }, false)
+    // 댓글 작성 이벤트 처리===============================================
+
+
+
+    // 댓글 수정 이벤트 처리===============================================
+    document.querySelector(".updateBtn").addEventListener("click", function (e) {
+        // registerModal.hide()
+        const replyObj = {
+            bno:bno,
+            rno: replyHeader.innerHTML,
+            replyText: updateText.value
+        }
+        // reply.js , updateReply 이용하기.
+        updateReply(replyObj).then(result => {
+            // 댓글 수정 성공 후 처리
+            alert(result.rno + "번 댓글 수정 성공: ")
+            // 모달 창 닫기
+            updateModal.hide()
+            // 기존 입력폼의 값 비우기
+            updateText.value = ""
+            // 마지막 댓글 페이지 이동
+            printReplies(page, size)
+        }).catch(e => {
+            alert("댓글 수정 실패")
+        })
+
+    }, false)
+    // 댓글 수정 이벤트 처리===============================================
+
+    // 댓글 수정 닫기 이벤트 처리===============================================
+    closeUpdateBtn.addEventListener("click",function (e){
+        updateModal.hide()
+    },false)
+    // 댓글 수정 닫기 이벤트 처리===============================================
+
+
+    // 댓글 삭제 이벤트 처리===============================================
+    //document.querySelector(".deleteBtn").addEventListener("click", function (e) {
+    deleteBtn.addEventListener("click", function (e) {
+
+        const rno = replyHeader.innerHTML
+        deleteReply(rno).then(result => {
+            // 댓글 삭제 성공 후 처리
+            alert(result.rno + "번 댓글 삭제 성공: ")
+            // 모달 창 닫기
+            updateModal.hide()
+            // 기존 입력폼의 값 비우기
+            updateText.value = ""
+            // 마지막 댓글 페이지 이동
+            printReplies(page, size)
+        }).catch(e => {
+            alert("댓글 삭제 실패")
+        })
+
+    }, false)
+    // 댓글 삭제 이벤트 처리===============================================
+
 
     // 데이터 출력용
     // console.log(getTest(bno))
