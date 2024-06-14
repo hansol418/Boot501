@@ -100,6 +100,8 @@ public class LunchSearchImpl extends QuerydslRepositorySupport implements LunchS
 
     return result;
   }
+
+
 }
 
 
