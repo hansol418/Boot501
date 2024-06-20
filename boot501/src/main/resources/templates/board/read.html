@@ -45,22 +45,22 @@
                                    th:value="${#temporals.format(boardDTO.modDate, 'yyyy-MM-dd HH:mm:ss')}" readonly>
                         </div>
 
-                        <!--                        user 로그인한 유저 임.-->
+<!--                        user 로그인한 유저 임.-->
                         <div class="mb-3" th:with="user=${#authentication.principal}">
                             <div th:with="link = ${pageRequestDTO.getLink()}">
-                                <a th:if="${user != null && user.username==boardDTO.writer}" th:href="|@{/board/update(bno =${boardDTO.bno})}&${link}|">
-                                    <button type="button" class="btn btn-primary">수정하기</button>
-                                </a>
-                                <a th:href="|@{/board/list}?${link}|">
-                                    <button type="button" class="btn btn-danger">목록가기</button>
-                                </a>
+                            <a th:if="${user != null && user.username==boardDTO.writer}" th:href="|@{/board/update(bno =${boardDTO.bno})}&${link}|">
+                                <button type="button" class="btn btn-primary">수정하기</button>
+                            </a>
+                            <a th:href="|@{/board/list}?${link}|">
+                                <button type="button" class="btn btn-danger">목록가기</button>
+                            </a>
                             </div>
                         </div>
 
 
                     </form>
                     <!--            card-body 닫는 부분-->
-                    <!--                    <button class="btn btn-info addReplyBtn2">댓글 작성2</button>-->
+<!--                    <button class="btn btn-info addReplyBtn2">댓글 작성2</button>-->
                 </div>
                 <!--                첨부 이미지 표시하기, 원본 이미지 -->
                 <div class="col">
@@ -150,10 +150,10 @@
                 <div class="modal-footer" th:with="user=${#authentication.principal}">
                     <button type="button" class="btn btn-secondary closeUpdateBtn" data-bs-dismiss="modal">Close
                     </button>
-                    <div th:if="${user != null && user.username==boardDTO.writer}" >
-                        <button type="button" class="btn btn-primary updateBtn">수정하기</button>
-                        <button type="button" class="btn btn-warning deleteBtn">삭제하기</button>
-                    </div>
+
+                    <button type="button" class="btn btn-primary updateBtn">수정하기</button>
+                    <button type="button" class="btn btn-warning deleteBtn">삭제하기</button>
+
                 </div>
             </div>
         </div>
@@ -340,6 +340,13 @@
             // reply.replyer : 댓글 작성자,
             // 같을 경우에 hasAuth = true
             hasAuth = currentUser === reply.replyer
+            if(hasAuth){
+                document.querySelector(".updateBtn").style.display = 'inline'
+                document.querySelector(".deleteBtn").style.display = 'inline'
+            } else {
+                document.querySelector(".updateBtn").style.display = 'none'
+                document.querySelector(".deleteBtn").style.display = 'none'
+            }
 
         }).catch(e =>
             alert("댓글 조회 실패")

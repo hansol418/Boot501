@@ -1,6 +1,7 @@
 package com.busanit501.boot501.config;
 
 import com.busanit501.boot501.security.CustomUserDetailsService;
+import com.busanit501.boot501.security.handler.Custom403Handler;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.boot.autoconfigure.security.servlet.PathRequest;
@@ -15,6 +16,7 @@ import org.springframework.security.config.annotation.web.configuration.WebSecur
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.access.AccessDeniedHandler;
 import org.springframework.security.web.authentication.rememberme.JdbcTokenRepositoryImpl;
 import org.springframework.security.web.authentication.rememberme.PersistentTokenRepository;
 import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
@@ -25,7 +27,7 @@ import javax.sql.DataSource;
 @Configuration
 @RequiredArgsConstructor
 // 어노테이션을 이용해서, 특정 권한 있는 페이지 접근시, 구분가능.
-//@EnableGlobalMethodSecurity(prePostEnabled = true)
+@EnableGlobalMethodSecurity(prePostEnabled = true)
 //@EnableMethodSecurity
 @EnableWebSecurity
 public class CustomSecurityConfig {
@@ -44,23 +46,38 @@ public class CustomSecurityConfig {
         // 로그인 없이 자동 로그인 확인
         // 빈 설정.
         // 인증 관련된 설정.
+
         http.formLogin(
                 formLogin -> formLogin.loginPage("/member/login").permitAll()
         );
+
+        //로그인 후, 성공시 리다이렉트 될 페이지 지정, 간단한 버전.
+        http.formLogin(formLogin ->
+                formLogin.defaultSuccessUrl("/board/list",true)
+        );
+
         // 기본은 csrf 설정이 on, 작업시에는 끄고 작업하기.
         http.csrf(httpSecurityCsrfConfigurer -> httpSecurityCsrfConfigurer.disable());
 
         // 특정 페이지에 접근 권한 설정.
         http.authorizeRequests()
                 // 정적 자원 모두 허용.
-                .requestMatchers("/css/**", "/js/**","/image/**").permitAll()
+                .requestMatchers("/css/**", "/js/**","/images/**").permitAll()
                 // 리스트는 기본으로 다 들어갈수 있게., 모두 허용
-                .requestMatchers("/", "/board/list", "/login", "/joinUser","/joinForm","/findAll","/images/**").permitAll()
+                .requestMatchers("/", "/board/list","/member/join", "/login", "/joinUser","/joinForm","/findAll","/images/**").permitAll()
                 // 로그인 후 확인 하기. 권한 예제) hasRole("USER"),hasRole("ADMIN")
                 .requestMatchers("/board/register","/board/read","/board/update" ).authenticated()
                 // 권한  관리자만, 예제로 , 수정폼은 권한이 관리자여야 함.
-                .requestMatchers("/admin","/images").hasRole("ADMIN")
+                .requestMatchers("/admin").hasRole("ADMIN")
+                // 위의 접근 제어 목록 외의 , 다른 어떤 요청이라도 반드시 인증이 되어야 접근이 된다.
                 .anyRequest().authenticated();
+
+        //403 핸들러 적용하기.
+        http.exceptionHandling(
+                accessDeny -> {
+                    accessDeny.accessDeniedHandler(accessDeniedHandler());
+                }
+        );
 
         // 자동로그인 설정.1
         http.rememberMe(
@@ -75,6 +92,10 @@ public class CustomSecurityConfig {
                                 // 토큰의 만료 시간.
                                 .tokenValiditySeconds(60*60*24*30)
         );
+
+
+
+
 
         return http.build();
     }
@@ -97,6 +118,12 @@ public class CustomSecurityConfig {
         return (web) ->
                 web.ignoring()
                         .requestMatchers(PathRequest.toStaticResources().atCommonLocations());
+    }
+
+    //사용자 정의한 403 예외 처리
+    @Bean
+    public AccessDeniedHandler accessDeniedHandler() {
+        return new Custom403Handler();
     }
 
 

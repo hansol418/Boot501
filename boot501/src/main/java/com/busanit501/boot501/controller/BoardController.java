@@ -59,7 +59,7 @@ public class BoardController {
 
     //글쓰기 처리
     // 로그인한 유저이고, 일반 유저, 글쓰기가 가능하게끔 설정.
-    @PreAuthorize("hasRole('USER')")
+//    @PreAuthorize("isAuthenticated()")
     @PostMapping("/register")
     public String register(@Valid BoardDTO boardDTO
             , BindingResult bindingResult
@@ -88,9 +88,11 @@ public class BoardController {
     //하나 조회 = 상세화면, read
     // 준비물, 해당 게시글 번호로 조회한 데이터가 필요함.
     // 화면 -> 서버로 , bno 게시글 번호를 전달하기.
+//    @PreAuthorize("principal.username == #boardDTO2.writer")
     @GetMapping({"/read","/update"})
-    public void read(Long bno, PageRequestDTO pageRequestDTO, Model model) {
+    public void read(Long bno,BoardDTO boardDTO2,  PageRequestDTO pageRequestDTO, Model model) {
 
+//        log.info("BoardController : boardDTO2 확인 중, boardDTO2 : " + boardDTO2.getWriter());
         log.info("BoardController : /board/read  확인 중, pageRequestDTO : " + pageRequestDTO);
 
         // 디비에서, bno 번호, 하나의 게시글 디비 정보 가져오기.
@@ -102,7 +104,8 @@ public class BoardController {
 
     } //read 닫는 부분
 
-    //글수정 처리
+    //글수정 처리, 로직 처리만 막는 걸로.
+    @PreAuthorize("principal.username == #boardDTO.writer")
     @PostMapping("/update")
     public String update(@Valid BoardDTO boardDTO
             , BindingResult bindingResult
@@ -134,6 +137,9 @@ public class BoardController {
     }
 
     //글삭제 처리
+    // principal.username: 로그인한 유저
+    // #boardDTO.writer : 작성자
+    @PreAuthorize("principal.username == #boardDTO.writer")
     @PostMapping("/delete")
     public String delete(BoardDTO boardDTO, PageRequestDTO pageRequestDTO, Long bno, RedirectAttributes redirectAttributes
     ) {
