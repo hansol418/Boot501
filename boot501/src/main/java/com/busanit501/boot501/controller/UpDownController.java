@@ -28,7 +28,7 @@ public class UpDownController {
     @Value("${com.busanit501.upload.path}")
     private String uploadPath;
 
-    //    @Tag(name = "파일 업로드 post 방식", description = "파일 업로드 post 방식")
+//    @Tag(name = "파일 업로드 post 방식", description = "파일 업로드 post 방식")
     @PostMapping(value = "/upload", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public List<UploadResultDTO> upload(UploadFileDTO uploadFileDTO){
         log.info("UpDownController에서 uploadFileDTO : "+uploadFileDTO);
@@ -64,7 +64,7 @@ public class UpDownController {
                     }
 
                 } catch (IOException e) {
-                    e.printStackTrace();
+                   e.printStackTrace();
                 }
 
                 //각각 이미지 파일명, 임시 목록에 담기.
@@ -89,7 +89,7 @@ public class UpDownController {
         // 스프링 코어 기능에서,
         // c:\\upload\\springTest\\이미지파일명, 접근 하는 객체
         Resource resource = new FileSystemResource(
-                uploadPath+File.separator+fileName);
+                 uploadPath+File.separator+fileName);
         String resourceName = resource.getFilename();
         // http 헤더 객체를 이용해서 추가 옵션
         HttpHeaders headers = new HttpHeaders();

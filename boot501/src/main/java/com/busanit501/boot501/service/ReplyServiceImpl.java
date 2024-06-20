@@ -66,7 +66,7 @@ public class ReplyServiceImpl implements ReplyService {
         //유효성 체크.
         Optional<Reply> replyOptional = replyRepository.findById(rno);
         Reply reply = replyOptional.orElseThrow();
-        replyRepository.deleteById(rno);
+     replyRepository.deleteById(rno);
     }
 
     @Override
@@ -81,9 +81,9 @@ public class ReplyServiceImpl implements ReplyService {
 
         List<ReplyDTO> dtoList = result.getContent().stream()
                 .map(reply ->{
-                    ReplyDTO replyDTO = modelMapper.map(reply,ReplyDTO.class);
-                    replyDTO.setBno(reply.getBoard().getBno());
-                    return replyDTO;
+                        ReplyDTO replyDTO = modelMapper.map(reply,ReplyDTO.class);
+                        replyDTO.setBno(reply.getBoard().getBno());
+                        return replyDTO;
                 })
                 .collect(Collectors.toList());
 

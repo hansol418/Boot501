@@ -12,7 +12,7 @@ async function getTest(bno) {
 // size: 페이지당 출력 갯수
 // goLast: 마지막에 최신 댓글이 있다면, 마지막 댓글로 가는 여부.
 async function getList({bno,page,size,goLast}){
-    const result = await axios.get(`/replies/list/${bno}`,{params : {page,size}})
+   const result = await axios.get(`/replies/list/${bno}`,{params : {page,size}})
 
     // 마지막 댓글 보러가기
     if(goLast) {
@@ -26,7 +26,7 @@ async function getList({bno,page,size,goLast}){
 
 //댓글 등록, 모달창으로 작업하기.
 async function addReply(replyObj){
-    const response = await axios.post(`/replies/`,replyObj)
+   const response = await axios.post(`/replies/`,replyObj)
     return response.data
 }
 

@@ -5,8 +5,6 @@ import io.swagger.v3.oas.models.info.Info;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
-import static org.eclipse.jdt.internal.compiler.problem.ProblemSeverities.Info;
-
 @Configuration
 public class SwaggerConfig {
 

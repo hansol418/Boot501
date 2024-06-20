@@ -1,6 +1,7 @@
 <!doctype html>
 <html lang="ko"
       xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity6"
       xmlns:th="www.thymeleaf.org"
       layout:decorate="~{layout/base.html}"
 >
@@ -44,18 +45,32 @@
                                    th:value="${#temporals.format(boardDTO.modDate, 'yyyy-MM-dd HH:mm:ss')}" readonly>
                         </div>
 
-                        <div class="mb-3" th:with="link = ${pageRequestDTO.getLink()}">
-                            <a th:href="|@{/board/update(bno =${boardDTO.bno})}&${link}|">
-                                <button type="button" class="btn btn-primary">수정하기</button>
-                            </a>
-                            <a th:href="|@{/board/list}?${link}|">
-                                <button type="button" class="btn btn-danger">목록가기</button>
-                            </a>
+                        <!--                        user 로그인한 유저 임.-->
+                        <div class="mb-3" th:with="user=${#authentication.principal}">
+                            <div th:with="link = ${pageRequestDTO.getLink()}">
+                                <a th:if="${user != null && user.username==boardDTO.writer}" th:href="|@{/board/update(bno =${boardDTO.bno})}&${link}|">
+                                    <button type="button" class="btn btn-primary">수정하기</button>
+                                </a>
+                                <a th:href="|@{/board/list}?${link}|">
+                                    <button type="button" class="btn btn-danger">목록가기</button>
+                                </a>
+                            </div>
                         </div>
 
-                    </form>
 
+                    </form>
+                    <!--            card-body 닫는 부분-->
+                    <!--                    <button class="btn btn-info addReplyBtn2">댓글 작성2</button>-->
                 </div>
+                <!--                첨부 이미지 표시하기, 원본 이미지 -->
+                <div class="col">
+                    <div class="card" th:if="${boardDTO.fileNames != null && boardDTO.fileNames.size()>0}">
+                        <img class="card-img-top" th:each="fileName: ${boardDTO.fileNames}"
+                             th:src="|/view/${fileName}|">
+
+                    </div>
+                </div>
+                <!--                첨부 이미지 표시하기, 원본 이미지 -->
             </div>
         </div>
         <!--        div row-->
@@ -101,7 +116,7 @@
                     <div class="input-group mb-3">
                         <span class="input-group-text">작성자</span>
                         <input type="text" placeholder="작성자를 입력해주세요."
-                               class="form-control replyer"></input>
+                               class="form-control replyer" th:value="${#authentication.principal.username}" readonly></input>
                     </div>
 
                 </div>
@@ -132,11 +147,13 @@
                     </div>
 
                 </div>
-                <div class="modal-footer">
+                <div class="modal-footer" th:with="user=${#authentication.principal}">
                     <button type="button" class="btn btn-secondary closeUpdateBtn" data-bs-dismiss="modal">Close
                     </button>
-                    <button type="button" class="btn btn-primary updateBtn">수정하기</button>
-                    <button type="button" class="btn btn-warning deleteBtn">삭제하기</button>
+                    <div th:if="${user != null && user.username==boardDTO.writer}" >
+                        <button type="button" class="btn btn-primary updateBtn">수정하기</button>
+                        <button type="button" class="btn btn-warning deleteBtn">삭제하기</button>
+                    </div>
                 </div>
             </div>
         </div>
@@ -154,8 +171,6 @@
 <script layout:fragment="javascript" th:inline="javascript">
 
 
-
-
     // 모달 댓글 폼 표시하기=====================================================
     const registerModal = new bootstrap.Modal(document.querySelector(".registerModal"))
 
@@ -170,33 +185,14 @@
         registerModal.show()
     }, false)
 
-    document.querySelector(".registerBtn").addEventListener("click", function (e) {
-        // registerModal.hide()
-        const replyObj = {
-            bno: bno,
-            replyText: replyText.value,
-            replyer: replyer.value
-        }
-        // reply.js , addReply 이용하기.
-        addReply(replyObj).then(result => {
-            // 댓글 쓰기 성공 후 처리
-            alert(result.rno + "번 댓글 작성 성공: ")
-            // 모달 창 닫기
-            registerModal.hide()
-            // 기존 입력폼의 값 비우기
-            replyText.value = ""
-            replyer.value = ""
-            // 마지막 댓글 페이지 이동
-            printReplies(1, 10, true)
-        }).catch(e => {
-            alert("댓글 작성 실패")
-        })
+    //test
+    // 이벤트 처리하기.
+    // document.querySelector(".addReplyBtn2").addEventListener("click", function (e) {
+    //     console.log("댓글 버튼 반응 확인 ")
+    //     registerModal.show()
+    // }, false)
 
-    }, false)
     // 모달 댓글 폼 표시하기=====================================================
-
-
-
 
 
     const bno = [[${boardDTO.bno}]]
@@ -247,6 +243,7 @@
         } // if
         replyList.innerHTML = str
     }
+
     /////댓글 목록 , HTML 그리기/////////////////
 
     /////댓글 페이징, HTML 그리기/////////////////////////////////////
@@ -273,27 +270,28 @@
         // 위에서 만든 가상의 HTML 요소를 , 특정 요소에 주입하기.
         replyPaging.innerHTML = pageStr
     }
+
     /////댓글 페이징, HTML 그리기/////////////////////////////////////
 
     // 페이지 이동 이벤트 처리=====================================================
     let page = 1
     let size = 10
 
-    replyPaging.addEventListener("click",function (e){
+    replyPaging.addEventListener("click", function (e) {
         e.preventDefault()
         e.stopPropagation()
 
         const target = e.target
 
         // a 태그만 이벤트 처리 하겠다, 그외에는 넘어가기함.
-        if(!target || target.tagName != 'A'){
+        if (!target || target.tagName != 'A') {
             return
         }
         const pageNum = target.getAttribute("data-page")
         page = pageNum
-        printReplies(page,size)
+        printReplies(page, size)
 
-    },false)
+    }, false)
     // 페이지 이동 이벤트 처리=====================================================
 
     // 모달 댓글 수정폼 표시하기=====================================================
@@ -306,23 +304,29 @@
     const updateText = document.querySelector(".updateText")
     const closeUpdateBtn = document.querySelector(".closeUpdateBtn")
 
+    // 댓글 작성자와 로그인 유저의 일치 여부를 확인
+    // 댓글 작성자를 불러와야 함. 서버에서.
+    let hasAuth = false
+    // 현재 로그인한 유저 , 변수에 담기.
+    const currentUser = [[${#authentication.principal.username}]]
+
     // 이벤트 처리하기.
     // 댓글 목록에서 하나 댓글 선택시, 이벤트 처리
-    replyList.addEventListener("click", function (e){
+    replyList.addEventListener("click", function (e) {
         e.preventDefault()
         e.stopPropagation()
 
         const target = e.target
 
         // 목록요소를 선택시 span만 이벤트 처리 하겠다.
-        if(!target || target.tagName != 'SPAN' ){
+        if (!target || target.tagName != 'SPAN') {
             return
         }
         // span 태그에 있는 속성 data-rno 값 가져오기.
         const rno = target.getAttribute("data-rno")
 
         // span 태그 중에서, data-rno 요소가 있는 것만 처리하겠다.
-        if(!rno) {
+        if (!rno) {
             return;
         }
 
@@ -331,11 +335,17 @@
             replyHeader.innerHTML = reply.rno
             updateText.value = reply.replyText
             updateModal.show()
+
+            //currentUser : 로그인한 유저,
+            // reply.replyer : 댓글 작성자,
+            // 같을 경우에 hasAuth = true
+            hasAuth = currentUser === reply.replyer
+
         }).catch(e =>
             alert("댓글 조회 실패")
         )
 
-    },false)
+    }, false)
     // 댓글 목록에서 하나 댓글 선택시, 이벤트 처리
     // 모달 댓글 수정폼 표시하기=====================================================
 
@@ -366,12 +376,19 @@
     // 댓글 작성 이벤트 처리===============================================
 
 
-
     // 댓글 수정 이벤트 처리===============================================
     document.querySelector(".updateBtn").addEventListener("click", function (e) {
+        // 유효성 체크,
+        // 로그인 한 유저와, 댓글 작성자가 일치 할 때만 수정 가능해요.
+        if(!hasAuth) {
+            alert("댓글 작성자만 수정 가능해요")
+            updateModal.hide()
+            return
+        }
+
         // registerModal.hide()
         const replyObj = {
-            bno:bno,
+            bno: bno,
             rno: replyHeader.innerHTML,
             replyText: updateText.value
         }
@@ -393,15 +410,21 @@
     // 댓글 수정 이벤트 처리===============================================
 
     // 댓글 수정 닫기 이벤트 처리===============================================
-    closeUpdateBtn.addEventListener("click",function (e){
+    closeUpdateBtn.addEventListener("click", function (e) {
         updateModal.hide()
-    },false)
+    }, false)
     // 댓글 수정 닫기 이벤트 처리===============================================
 
 
     // 댓글 삭제 이벤트 처리===============================================
     //document.querySelector(".deleteBtn").addEventListener("click", function (e) {
     deleteBtn.addEventListener("click", function (e) {
+
+        if(!hasAuth) {
+            alert("댓글 작성자만 삭제 가능해요")
+            updateModal.hide()
+            return
+        }
 
         const rno = replyHeader.innerHTML
         deleteReply(rno).then(result => {

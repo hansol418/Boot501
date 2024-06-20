@@ -6,8 +6,8 @@
 >
 <body>
 <div layout:fragment="content">
-    <!--    화면 구성시, 이 프래그먼트 영역 안에서만 작업. 주의 사항,-->
-    <!--    앞시간에 모달이 동작을 안했던 이유가, 여기 블록안에 없어서 -->
+<!--    화면 구성시, 이 프래그먼트 영역 안에서만 작업. 주의 사항,-->
+<!--    앞시간에 모달이 동작을 안했던 이유가, 여기 블록안에 없어서 -->
     <!--      검색 화면 구성 넣기-->
     <div class="row content">
         <div class="col">
@@ -17,7 +17,7 @@
                     <h5 class="card-title">검색화면 </h5>
                     <form action="/board/list" method="get">
                         <!--                                    <input type="hidden" name="page" value="${pageRequestDTO.page}">-->
-                        <!--                        <input type="hidden" name="size" value="${pageRequestDTO.size}">-->
+<!--                        <input type="hidden" name="size" value="${pageRequestDTO.size}">-->
                         <div class="mb-3">
                             <!--                            기존의 체크 박스 부분 -> select 태그로 변경하기.-->
                             <select class="form-select mb-3" name="type">
@@ -67,12 +67,12 @@
         <div class="col">
             <!--      부트 스트랩 5.3 Card 컴포넌트 Header and Footer 의 샘플 가져오기-->
             <div class="card">
-                <!--                <div class="card-header">-->
-                <!--                    목록-->
-                <!--                </div>-->
+<!--                <div class="card-header">-->
+<!--                    목록-->
+<!--                </div>-->
                 <div class="card-body">
 
-                    <!--                    모달 창 버튼 테스트-->
+<!--                    모달 창 버튼 테스트-->
                     <!-- Button trigger modal -->
 
                     <!--                     리스트의 목록의 요소를 넣기-->
@@ -82,8 +82,8 @@
                         <tr>
                             <th scope="col">Bno</th>
                             <th scope="col">Title</th>
-                            <!--                            상세보기 시, 내용 보기로 하기.-->
-                            <!--                            <th scope="col">Content</th>-->
+<!--                            상세보기 시, 내용 보기로 하기.-->
+<!--                            <th scope="col">Content</th>-->
                             <th scope="col">Writer</th>
                             <th scope="col">RegDate</th>
                             <!--                            <th scope="col">Finished</th>-->
@@ -95,13 +95,18 @@
 
                             <td>
                                 <a th:href="|@{/board/read(bno =${dto.bno})}&${link}|">
-                                    [[${dto.title}]]
+                                [[${dto.title}]]
                                 </a>
                                 <span class="badge progress-bar-success" style="background-color: #fe010a">
                                     [[${dto.replyCount}]]
                                 </span>
+<!--                                첨부 이미지 출력하기-->
+                                <div th:if="${dto.boardImages != null && dto.boardImages.size()>0}">
+                                    <img style="width: 100px" th:each="boardImage : ${dto.boardImages}"
+                                     th:src="|/view/s_${boardImage.uuid}_${boardImage.fileName}|">
+                                </div>
                             </td>
-                            <!--이부분 주석 인식 못해서 삭제함-->
+<!--이부분 주석 인식 못해서 삭제함-->
 
                             <td>[[${dto.writer}]]</td>
                             <!--                            <td>[[${dto.regDate}]]</td>-->
@@ -122,7 +127,7 @@
                             <!--                                    서버에서 받아온 데이터를 적용하기-->
                             <!--                            화면에 표시에 페이지 번호 10개 그리기-->
                             <th:blcok th:each="i:${#numbers.sequence(responseDTO.start,responseDTO.end)}">
-                                <!--                                기존 jstl c 태그 문법 , 타임리프 문법으로 변경하기-->
+<!--                                기존 jstl c 태그 문법 , 타임리프 문법으로 변경하기-->
                                 <li th:class="${responseDTO.page == i}?'page-item active':'page-item'">
                                     <a class="page-link"
                                        th:data-num="${i}">[[${i}]]</a>

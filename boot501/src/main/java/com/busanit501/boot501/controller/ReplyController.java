@@ -32,7 +32,7 @@ public class ReplyController {
     public Map<String,Long> register(
             //@RequestBody -> JSON 문자열.  , 키: 값의 구조 형태의 중간 데이터 타입,
             // JSON 문자열 <--Jackson 컨버터 --> DTO
-            @Valid @RequestBody ReplyDTO replyDTO,
+           @Valid @RequestBody ReplyDTO replyDTO,
             BindingResult bindingResult) throws BindException {
         log.info("ReplyController의 register ,replyDTO 확인: "+replyDTO);
 
@@ -58,7 +58,7 @@ public class ReplyController {
     public PageResponseDTO<ReplyDTO> getList(
             // 경로의 변수를 서버에 재할당.
             // 게시글 번호를 가지고 올 예정.
-            @PathVariable("bno") Long bno, PageRequestDTO pageRequestDTO
+        @PathVariable("bno") Long bno, PageRequestDTO pageRequestDTO
     ) {
         PageResponseDTO<ReplyDTO> responseDTO = replyService.getListOfBoard(bno, pageRequestDTO);
         return  responseDTO;

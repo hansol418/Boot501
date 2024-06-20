@@ -4,8 +4,11 @@ import com.busanit501.boot501.domain.Board;
 import com.busanit501.boot501.repository.search.BoardSearch;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
+
+import java.util.Optional;
 
 // 인터페이스 이름 BoardRepository, 생성시 주의하고,
 // JpaRepository<엔티티클래스명,pk(@Id)의 타입>
@@ -29,6 +32,13 @@ public interface BoardRepository extends JpaRepository<Board,Long> , BoardSearch
   // nativeQuery = true 옵션을 이용한다.
   @Query(value = "select now()", nativeQuery = true)
   String getTime();
+
+  // 보드를 조회시, 지연로딩으로 하고 있는데, 조인하는 테이블을 한번에
+  // 다같이 불러오는 설정.
+  @EntityGraph(attributePaths = {"imageSet"})
+  @Query("select b from Board b where b.bno=:bno")
+  Optional<Board> findByIdWithImages(Long bno);
+
 
 }
 
