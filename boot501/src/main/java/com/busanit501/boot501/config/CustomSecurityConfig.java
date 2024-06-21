@@ -7,9 +7,7 @@ import lombok.extern.log4j.Log4j2;
 import org.springframework.boot.autoconfigure.security.servlet.PathRequest;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.security.config.annotation.authentication.configuration.EnableGlobalAuthentication;
 import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
-import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityCustomizer;
@@ -19,7 +17,6 @@ import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.access.AccessDeniedHandler;
 import org.springframework.security.web.authentication.rememberme.JdbcTokenRepositoryImpl;
 import org.springframework.security.web.authentication.rememberme.PersistentTokenRepository;
-import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 
 import javax.sql.DataSource;
 
@@ -51,6 +48,12 @@ public class CustomSecurityConfig {
                 formLogin -> formLogin.loginPage("/member/login").permitAll()
         );
 
+        // 로그 아웃 설정.
+        http.logout(
+                logout -> logout.logoutUrl("/member/logout").logoutSuccessUrl("/member/login?logout")
+
+        );
+
         //로그인 후, 성공시 리다이렉트 될 페이지 지정, 간단한 버전.
         http.formLogin(formLogin ->
                 formLogin.defaultSuccessUrl("/board/list",true)
@@ -64,13 +67,14 @@ public class CustomSecurityConfig {
                 // 정적 자원 모두 허용.
                 .requestMatchers("/css/**", "/js/**","/images/**").permitAll()
                 // 리스트는 기본으로 다 들어갈수 있게., 모두 허용
-                .requestMatchers("/", "/board/list","/member/join", "/login", "/joinUser","/joinForm","/findAll","/images/**").permitAll()
+                .requestMatchers("/", "/board/list","/member/join","/upload","/view/**", "/login", "/joinUser","/joinForm","/findAll","/images/**").permitAll()
                 // 로그인 후 확인 하기. 권한 예제) hasRole("USER"),hasRole("ADMIN")
                 .requestMatchers("/board/register","/board/read","/board/update" ).authenticated()
                 // 권한  관리자만, 예제로 , 수정폼은 권한이 관리자여야 함.
                 .requestMatchers("/admin").hasRole("ADMIN")
                 // 위의 접근 제어 목록 외의 , 다른 어떤 요청이라도 반드시 인증이 되어야 접근이 된다.
                 .anyRequest().authenticated();
+//                .anyRequest().permitAll();
 
         //403 핸들러 적용하기.
         http.exceptionHandling(
@@ -93,8 +97,12 @@ public class CustomSecurityConfig {
                                 .tokenValiditySeconds(60*60*24*30)
         );
 
-
-
+        // 캐시 설정 비활성화
+//        http.headers(
+//                cacheDisable -> cacheDisable.cacheControl(
+//                        disable -> disable.disable()
+//                )
+//        );
 
 
         return http.build();
